@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Database Administration</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content style="background-color: lightgray">
+
+
+    <ion-item>
+      <ion-label>Category</ion-label>
+      <ion-input [(ngModel)]="collectionLoaded"></ion-input>
+    </ion-item>
+    <button ion-button (click)="loadCollection()">Load Collection</button>
+
+    <ion-item *ngFor="let item of items" >
+      {{item.Name}}
+    </ion-item>
+
+
+    <p style="border-style: solid">
+      <ion-item>
+        <ion-label>Enter Name</ion-label>
+        <ion-input [(ngModel)]="category.Name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Group</ion-label>
+        <ion-input [(ngModel)]="category.Group"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Color</ion-label>
+        <ion-input [(ngModel)]="category.Color"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Order </ion-label>
+        <ion-input [(ngModel)]="category.Order"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Icon </ion-label>
+        <ion-input [(ngModel)]="category.icon"></ion-input>
+      </ion-item>
+      <button ion-button (click)="addData()">Add data</button>
+    </p>
+
+
+    <p style="border-style: solid">
+      <ion-item>
+        <ion-label>Date of Audit</ion-label>
+        <ion-input [(ngModel)]="audit.Date"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Location of Audit</ion-label>
+        <ion-input [(ngModel)]="audit.Location"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Category of Audit</ion-label>
+        <ion-input [(ngModel)]="audit.Category"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Volume of Audit</ion-label>
+        <ion-input [(ngModel)]="audit.Volume"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Enter Weight of Audit</ion-label>
+        <ion-input [(ngModel)]="audit.Weight"></ion-input>
+      </ion-item>
+      <button ion-button (click)="addAudit()">Add data</button>
+
+    </p>
+
+
+</ion-content>

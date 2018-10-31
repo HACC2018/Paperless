@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar>
+    <button menuToggle *ngIf="!selectedItem">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Item Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content  style="background-color:#C5DCFC">
+  <h3 text-center *ngIf="selectedItem">
+    {{selectedItem.title}}
+    <ion-icon [name]="selectedItem.icon"></ion-icon>
+  </h3>
+  <h4 text-center *ngIf="selectedItem">
+    You navigated here from <b>{{selectedItem.Name}}</b>
+  </h4>
+
+
+  <ion-grid>
+    <p class='ion-grid-bin'>
+      <ion-row> Newest Bag
+        <ion-item class='ion-label-bin'>
+          <ion-label floating>Weight (lbs)</ion-label>
+          <ion-input type="number" name="currentWeight" [(ngModel)]="currentWeight" ></ion-input>
+        </ion-item>
+        <ion-item class='ion-label-bin'>
+          <ion-label floating>Volume (gal bag % for 50 gal bag)</ion-label>
+          <ion-input type="number" name="currentVolume" [(ngModel)]="currentVolume" ></ion-input>
+        </ion-item>
+      </ion-row>
+    </p>
+  </ion-grid>
+
+  <button ion-button (click)="addBag()">Add bag</button>
+    <ng-container *ngFor="let item of items; let i = index">
+      <ng-container *ngIf="item.Category==selectedItem.Name">
+        <p style="border-style: solid; margin: 0; padding: 1">
+          Bin - {{item.Date}}
+          <ion-item>
+            Volume: {{item.Volume}}
+          </ion-item>
+          <ion-item >
+            Weight: {{item.Weight}}
+          </ion-item>
+        </p>
+      </ng-container>
+    </ng-container>
+</ion-content>

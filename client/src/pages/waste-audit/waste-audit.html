@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-navbar [color]="isRecording ? 'danger' : 'primary'" >
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Building: QLS</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content style="background-color: lightgray">
+
+  <button ion-button full (click)="getPermisions()">Get Permission </button>
+  <button ion-button full (click)="startListening()">Start recording message </button>
+
+  <ion-card>
+    <ion-card-header>This is what i understood</ion-card-header>
+    <ion-card-content>
+      <ion-list class="item-text-wrap">
+          <button ion-item *ngFor="let item of items" color="{{item.Color}}" (click)="itemTapped($event, item)">
+            <ion-icon name="{{item.icon}}" item-left></ion-icon>
+            {{item.Name}}
+          </button>
+        </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
