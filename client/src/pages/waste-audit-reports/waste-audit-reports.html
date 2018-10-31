@@ -48,11 +48,20 @@
 
   <ion-card [hidden]="!chartData">
     <ion-card-header>
-      Waste Audit
+      Waste Audit - Bar Chart
     </ion-card-header>
     <ion-card-content>
       <canvas #valueBarsCanvas></canvas>
     </ion-card-content>
   </ion-card>
 
+  <ion-card [hidden]="!chartData">
+    <ion-card-header>
+      Waste Audit - Pie Chart
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #valuePieCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
+fs

@@ -29,8 +29,28 @@ export class WasteAuditReportsPage {
     month: 0
   }
   @ViewChild('valueBarsCanvas') valueBarsCanvas;
+  @ViewChild('valuePieCanvas') valuePieCanvas;
 
+  backgroundColor =  [
+                 'rgba(54, 162, 235, 1)',
+                 'rgba(255, 206, 86, 1)',
+                 'rgba(255, 99, 132, 1)',
+                 'rgba(75, 192, 192, 1)',
+                 'rgba(153, 102, 255, 1)',
+                 'rgba(255, 159, 64, 1)'
+             ];
+ borderColor =  
+        [
+           'rgba(54, 162, 235, 1)',
+           'rgba(255, 206, 86, 1)',
+           'rgba(255,99,132,1)',
+           'rgba(75, 192, 192, 1)',
+           'rgba(153, 102, 255, 1)',
+           'rgba(255, 159, 64, 1)'
+       ];
+  reportByCat;
   valueBarsChart: any;
+  valuePieChart: any;
   chartData = null;
 
   constructor(public navCtrl: NavController, private db: AngularFireDatabase) {
@@ -40,25 +60,23 @@ export class WasteAuditReportsPage {
     console.log('ionViewDidLoad WasteAuditReportsPage');
 
     //Go get our data
-    this.getData(); 
+    this.getData();
+
   }
 
   getReportValues() {
-    let reportByCat = {};
-
+    this.reportByCat = {};
       for (let trans of this.chartData) {
-        if (reportByCat[trans.Category]) {
-          reportByCat[trans.Category] += +trans.Volume;
+        if (this.reportByCat[trans.Category]) {
+          this.reportByCat[trans.Category] += +trans.Volume;
         } else {
-          reportByCat[trans.Category] = +trans.Volume;
+          this.reportByCat[trans.Category] = +trans.Volume;
         }
       }
-      return reportByCat;
   }
-  createCharts(data) {
-  this.chartData = data;
+  createLineCharts() {
   // Calculate Values for the Chart
-  let graphData = this.getReportValues();
+  let graphData = this.reportByCat;
 
   // Create the chart
   this.valueBarsChart = new Chart(this.valueBarsCanvas.nativeElement, {
@@ -67,7 +85,8 @@ export class WasteAuditReportsPage {
         labels: Object.keys(graphData),
         datasets: [{
         data: Object.values(graphData),
-        backgroundColor: '#32db64'
+        backgroundColor: this.backgroundColor,
+        boarderColor: this.borderColor
       }]
     },
     options: {
@@ -99,26 +118,45 @@ export class WasteAuditReportsPage {
     }
   });
 }
-  updateCharts(data) {
-    this.chartData = data;
-    let graphData = this.getReportValues();
+  createPieCharts()
+  {
+    // Calculate Values for the Chart
+    let graphData = this.reportByCat;
 
-    // Update our dataset
-    this.valueBarsChart.data.datasets.forEach((dataset) => {
-      dataset.data = graphData
+    // Create the chart
+    this.valuePieChart = new Chart(this.valuePieCanvas.nativeElement, {
+      type: 'doughnut',
+      data: {
+          labels: Object.keys(graphData),
+          datasets: [{
+          data: Object.values(graphData),
+          backgroundColor: this.backgroundColor
+        }]
+      },
+      options: {
+        legend: {
+          display: true
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItems, data) {
+              return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
+            }
+          }
+        }
+      }
     });
-    this.valueBarsChart.update();
   }
+
   getData(){
     // Reference to our Firebase List
     this.ref = this.db.list('Audit');
     // Catch any update to draw the Chart
     this.ref.valueChanges().subscribe(result => {
-      if (this.chartData) {
-        this.updateCharts(result)
-      } else {
-        this.createCharts(result)
-      }
+        this.chartData = result;
+        this.getReportValues();
+        this.createLineCharts();
+        this.createPieCharts();
     })
   }
 }
