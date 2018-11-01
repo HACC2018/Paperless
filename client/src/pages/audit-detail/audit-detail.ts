@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { AngularFireDatabase } from 'angularfire2/database';
+import { Geolocation } from '@ionic-native/geolocation';
 
 import moment from 'moment';
 
@@ -19,11 +20,9 @@ import moment from 'moment';
 })
 export class AuditDetailPage {
   selectedItem: any;
-  private maxQuantity: number = 20;
-  private currentBin: number = 0 ;
 
-  private currentWeight: number = 0;
-  private currentVolume: number = 0;
+  currentWeight: string;
+  currentVolume: string;
 
   public items: Array<{ Category: string, Date: string
                       , Location: string, Volume: string
@@ -33,34 +32,47 @@ export class AuditDetailPage {
 
   constructor(public navCtrl: NavController
               , public navParams: NavParams
+              , private geoLoc : Geolocation
               , private afd : AngularFireDatabase
             )
   {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
-
     this.loadData();
-    //<div  *ngIf="{{selectedItem.Name}}={{item.Name}}">
-
   }
   addBag(){
-    var newBin;
-    var timestamp = moment().format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS);
+    var volumnToAdd = ((this.currentVolume === undefined) ? '0' : this.currentVolume);
+    var WeightToAdd = ((this.currentWeight === undefined) ? '0' : this.currentWeight);
 
-    newBin.Category = this.selectedItem.Name;
-    newBin.Date = timestamp;
-    newBin.Location = 'UHM';
-    newBin.Volume = this.currentVolume;
-    newBin.Weight = this.currentWeight;
+    console.log('Tempty vol tests');
+    console.log(volumnToAdd);
+    var newBin = {
+      Category: this.selectedItem.Name,
+      Date: moment().format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS),
+      Location: '',
+      Volume: volumnToAdd,
+      Weight: WeightToAdd,
+    };
 
-    this.afd.list("Audit").push(newBin);
-    this.currentVolume = 0;
-    this.currentWeight = 0;
+    //Getting location can take some time so we need to wait
+    this.geoLoc.getCurrentPosition().then((position) => {
+        newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
+        console.log('My location: ', newBin.Location);
+        this.afd.list("Audit").push(newBin);
+      });
+
+    //Empty this out
+    this.currentVolume = '';
+    this.currentWeight = '';
   }
 
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AuditDetailPage');
+  }
+  filterOutData(loadedData)
+  {
+    this.items = loadedData
   }
   loadData(){
     this.afd.list('Audit')
@@ -69,11 +81,12 @@ export class AuditDetailPage {
         (
           data =>
           {
-            console.log(data)
-            this.items=data
+            console.log("Getting Audit data");
+            this.filterOutData(data);
           }
 
         );
 
   }
+
 }

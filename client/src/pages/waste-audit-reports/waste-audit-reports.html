@@ -14,54 +14,88 @@
 </ion-header>
 
 <ion-content>
-  <ion-row align-items-end>
-    <ion-col col-2>
-      <button ion-button icon-only outline (click)="transaction.expense = !transaction.expense" [color]="transaction.expense ? 'danger' : 'primary'">
-        <ion-icon name="remove" *ngIf="transaction.expense"></ion-icon>
-        <ion-icon name="add" *ngIf="!transaction.expense"></ion-icon>
-      </button>
-    </ion-col>
-
-    <ion-col col-5>
-      <ion-item>
-        <ion-label floating>Value</ion-label>
-        <ion-input  [(ngModel)]="transaction.value"></ion-input>
-      </ion-item>
-
-    </ion-col>
-    <ion-col col-5>
-      <ion-item>
-        <ion-label floating>Month</ion-label>
-        <ion-select [(ngModel)]="transaction.month">
-          <ion-option [value]="month.value" *ngFor="let month of months">{{ month.name }}</ion-option>
-        </ion-select>
-      </ion-item>
-
-    </ion-col>
-  </ion-row>
-
-  <ion-row>
-    <ion-col>
-      <button ion-button full >Add Transaction</button>
-    </ion-col>
-  </ion-row>
-
-  <ion-card [hidden]="!chartData">
-    <ion-card-header>
-      Waste Audit - Bar Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #valueBarsCanvas></canvas>
-    </ion-card-content>
+  <ion-card>
+    <ion-list radio-group [(ngModel)]="selectedReport" >
+      <ion-row align-items-end>
+        <ion-col>
+          <ion-item>
+            <ion-label>Line</ion-label>
+            <ion-radio value="Line" (click)="graphSelect()" ></ion-radio>
+          </ion-item>
+        </ion-col>
+        <ion-col >
+          <ion-item>
+            <ion-label>Bar</ion-label>
+            <ion-radio value="Bar" (click)="graphSelect()"></ion-radio>
+          </ion-item>
+        </ion-col>
+        <ion-col >
+          <ion-item>
+            <ion-label>Pie</ion-label>
+            <ion-radio value="Pie" (click)="graphSelect()"></ion-radio>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-list>
   </ion-card>
 
-  <ion-card [hidden]="!chartData">
+  <ion-card>
+    <ion-list >
+      <ion-row >
+        <ion-col>
+          <ion-item>
+            <ion-label>Datefilter</ion-label>
+            <ion-input></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-list >
+  </ion-card>
+
+  <ion-card>
+    <ion-list>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label>Location Filter</ion-label>
+            <ion-input></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-list >
+  </ion-card>
+
+  <ng-container >
+    <ion-card [hidden]="showBar" >
+      <ion-card-header>
+        Waste Audit - Bar Chart
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #valueBarCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
+  </ng-container >
+
+  <ng-container  >
+    <ion-card [hidden]="showPie">
+      <ion-card-header>
+        Waste Audit - Pie Chart
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #valuePieCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
+</ng-container >
+
+<ng-container  >
+  <ion-card [hidden]="showLine">
     <ion-card-header>
-      Waste Audit - Pie Chart
+      Waste Audit - Line Chart
     </ion-card-header>
     <ion-card-content>
-      <canvas #valuePieCanvas></canvas>
+      <canvas #valueLineCanvas></canvas>
     </ion-card-content>
   </ion-card>
+</ng-container >
+
 </ion-content>
-fs

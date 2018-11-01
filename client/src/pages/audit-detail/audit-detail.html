@@ -16,34 +16,78 @@
     You navigated here from <b>{{selectedItem.Name}}</b>
   </h4>
 
+  <ion-content>
+    <ion-row align-items-end>
+      <ion-col col-2>
+        <button ion-button icon-only outline>
+          <ion-icon name="add"></ion-icon>
+        </button>
+      </ion-col>
 
-  <ion-grid>
-    <p class='ion-grid-bin'>
-      <ion-row> Newest Bag
-        <ion-item class='ion-label-bin'>
-          <ion-label floating>Weight (lbs)</ion-label>
-          <ion-input type="number" name="currentWeight" [(ngModel)]="currentWeight" ></ion-input>
+      <ion-col col-5>
+        <ion-item>
+          <ion-label floating>Weight</ion-label>
+          <ion-input  [(ngModel)]="currentWeight"></ion-input>
         </ion-item>
-        <ion-item class='ion-label-bin'>
+      </ion-col>
+      <ion-col col-5>
+        <ion-item>
           <ion-label floating>Volume (gal bag % for 50 gal bag)</ion-label>
-          <ion-input type="number" name="currentVolume" [(ngModel)]="currentVolume" ></ion-input>
+          <ion-select [(ngModel)]="currentVolume">
+            <ion-option value="10">10%</ion-option>
+            <ion-option value="20">20%</ion-option>
+            <ion-option value="30">30%</ion-option>
+            <ion-option value="40">40%</ion-option>
+            <ion-option value="50">50%</ion-option>
+            <ion-option value="60">60%</ion-option>
+            <ion-option value="70">70%</ion-option>
+            <ion-option value="75">75%</ion-option>
+            <ion-option value="80">80%</ion-option>
+            <ion-option value="85">85%</ion-option>
+            <ion-option value="90">90%</ion-option>
+            <ion-option value="100">100%</ion-option>
+          </ion-select>
         </ion-item>
-      </ion-row>
-    </p>
-  </ion-grid>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <button ion-button full (click)="addBag()" >Add new Bin</button>
+      </ion-col>
+    </ion-row>
 
-  <button ion-button (click)="addBag()">Add bag</button>
+
     <ng-container *ngFor="let item of items; let i = index">
       <ng-container *ngIf="item.Category==selectedItem.Name">
-        <p style="border-style: solid; margin: 0; padding: 1">
-          Bin - {{item.Date}}
-          <ion-item>
-            Volume: {{item.Volume}}
-          </ion-item>
-          <ion-item >
-            Weight: {{item.Weight}}
-          </ion-item>
-        </p>
+        <p style='text-align: center'>Bin - {{item.Date}}</p>
+        <ion-row align-items-end>
+          <ion-col col-6>
+            <ion-card>
+              <ion-item>
+                Volumne
+              </ion-item>
+              <ion-item>
+                {{item.Volume}}
+              </ion-item>
+            </ion-card>
+          </ion-col>
+          <ion-col col-6>
+            <ion-card>
+              <ion-item>
+                Weight
+              </ion-item>
+              <ion-item>
+                {{item.Weight}}
+              </ion-item>
+            </ion-card>
+          </ion-col>
+        </ion-row >
       </ng-container>
+
+        <!--
+          <p style="border-style: solid; margin: 0; padding: 1">
+
+        </p>
+          -->
     </ng-container>
 </ion-content>

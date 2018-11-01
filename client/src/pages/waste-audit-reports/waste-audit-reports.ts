@@ -4,7 +4,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase } from 'angularfire2/database';
-import { AngularFireList } from 'angularfire2/database/interfaces'
 
 /**
  * Generated class for the WasteAuditReportsPage page.
@@ -21,15 +20,16 @@ import { AngularFireList } from 'angularfire2/database/interfaces'
 export class WasteAuditReportsPage {
   data: Observable<any[]>;
   //This is the reference from the database
-  ref: AngularFireList<any>;
+  ref: any
 
   transaction = {
     value: 0,
     expense: false,
     month: 0
   }
-  @ViewChild('valueBarsCanvas') valueBarsCanvas;
+  @ViewChild('valueBarCanvas') valueBarCanvas;
   @ViewChild('valuePieCanvas') valuePieCanvas;
+  @ViewChild('valueLineCanvas') valueLineCanvas;
 
   backgroundColor =  [
                  'rgba(54, 162, 235, 1)',
@@ -39,7 +39,7 @@ export class WasteAuditReportsPage {
                  'rgba(153, 102, 255, 1)',
                  'rgba(255, 159, 64, 1)'
              ];
- borderColor =  
+ borderColor =
         [
            'rgba(54, 162, 235, 1)',
            'rgba(255, 206, 86, 1)',
@@ -48,9 +48,17 @@ export class WasteAuditReportsPage {
            'rgba(153, 102, 255, 1)',
            'rgba(255, 159, 64, 1)'
        ];
+
+ selectedReport;
+ showPie: boolean = false;
+ showBar: boolean = true;
+ showLine: boolean = false;
+
   reportByCat;
-  valueBarsChart: any;
+  valueBarChart: any;
   valuePieChart: any;
+  valueLineChart: any;
+
   chartData = null;
 
   constructor(public navCtrl: NavController, private db: AngularFireDatabase) {
@@ -61,9 +69,32 @@ export class WasteAuditReportsPage {
 
     //Go get our data
     this.getData();
+    this.graphSelect();
+  }
+  graphSelect()
+  {
+    this.showPie = false;
+    this.showBar = false;
+    this.showLine = false;
+
+    if(this.selectedReport=='Bar'){
+      this.showBar = true;
+    }
+    else if(this.selectedReport=='Pie'){
+      this.showPie = true;
+    }
+    else if(this.selectedReport=='Line'){
+      this.showLine = true;
+    }
+    else
+    {
+      this.showPie = false;
+      this.showBar = false;
+      this.showLine = false;
+
+    }
 
   }
-
   getReportValues() {
     this.reportByCat = {};
       for (let trans of this.chartData) {
@@ -74,17 +105,63 @@ export class WasteAuditReportsPage {
         }
       }
   }
-  createLineCharts() {
+  createBarCharts()
+  {
+    let graphData = this.reportByCat;
+
+    // Create the chart
+    this.valueBarChart = new Chart(this.valueBarCanvas.nativeElement, {
+      type: 'bar',
+      data: {
+          labels: Object.keys(graphData),
+          datasets: [{
+          data: Object.keys(graphData).map(key => graphData[key]),
+          backgroundColor: this.backgroundColor,
+          boarderColor: this.borderColor
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItems, data) {
+              return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
+            }
+          }
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              callback: function (value, index, values) {
+                return value;
+              },
+              suggestedMin: 0
+            }
+          }]
+        },
+      }
+    });
+  }
+  createLineCharts()
+  {
   // Calculate Values for the Chart
   let graphData = this.reportByCat;
 
+
   // Create the chart
-  this.valueBarsChart = new Chart(this.valueBarsCanvas.nativeElement, {
-    type: 'bar',
+  this.valueLineChart = new Chart(this.valueLineCanvas.nativeElement, {
+    type: 'line',
     data: {
         labels: Object.keys(graphData),
         datasets: [{
-        data: Object.values(graphData),
+        data: Object.keys(graphData).map(key => graphData[key]),
         backgroundColor: this.backgroundColor,
         boarderColor: this.borderColor
       }]
@@ -109,7 +186,7 @@ export class WasteAuditReportsPage {
         yAxes: [{
           ticks: {
             callback: function (value, index, values) {
-              return value + '$';
+              return value;
             },
             suggestedMin: 0
           }
@@ -129,7 +206,7 @@ export class WasteAuditReportsPage {
       data: {
           labels: Object.keys(graphData),
           datasets: [{
-          data: Object.values(graphData),
+          data: Object.keys(graphData).map(key => graphData[key]),
           backgroundColor: this.backgroundColor
         }]
       },
@@ -157,6 +234,7 @@ export class WasteAuditReportsPage {
         this.getReportValues();
         this.createLineCharts();
         this.createPieCharts();
+        this.createBarCharts();
     })
   }
 }

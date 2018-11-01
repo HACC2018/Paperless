@@ -23,20 +23,23 @@ export class DatabaseAdminPage {
   orderToAdd;
   collectionLoaded;
 
-  private category: Array<{Name: string, Group: string
+/*  public category: [{Name: string, Group: string
                         , Color: string, Order: string
                         , icon: string
-                      }> = [];
-  //Audit Variables
-  public audit: Array<{ Date: string, Location: string
-    , Category: string, Weight: string
-    , Volume: string }> = [];
+                      }] = [];*/
+                      public category:any;
 
+  //Audit Variables
+  /*public audit: [{ Date: string, Location: string
+    , Category: string, Weight: string
+    , Volume: string }] = [];*/
+public audit:any;
 
   constructor(public navCtrl: NavController
               , public navParams: NavParams
               , private afd : AngularFireDatabase)
   {
+    this.category = [];
   }
 
   ionViewDidLoad() {
@@ -53,12 +56,7 @@ export class DatabaseAdminPage {
   }
   addData(){
     this.afd.list("Category").push(this.category);
-    //this.afd.list(this.keyToAdd).push(this.valueToAdd);
-    this.category.Name="";
-    this.category.Group="";
-    this.category.Color="";
-    this.category.Order="";
-    this.category.icon="";
+
   }
   addAudit(){
     this.afd.list("Audit").push(this.audit);

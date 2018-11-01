@@ -15,6 +15,7 @@ import { WasteAuditReportsPage } from '../pages/waste-audit-reports/waste-audit-
 //Import AF2 Module for firebase
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { Geolocation } from '@ionic-native/geolocation';
 
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
 
@@ -59,6 +60,7 @@ export const firebaseConfig = {
     StatusBar,
     SplashScreen,
     SpeechRecognition,
+    Geolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
