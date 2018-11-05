@@ -35,6 +35,16 @@ export class DatabaseAdminPage {
     , Volume: string }] = [];*/
 public audit:any;
 
+//bindable items for audit
+date;
+location;
+auditCategory;
+volume;
+weight;
+
+//bindable items for Location
+AuditLocationName;
+AuditLocationGPS;
   constructor(public navCtrl: NavController
               , public navParams: NavParams
               , private afd : AngularFireDatabase)
@@ -59,12 +69,24 @@ public audit:any;
 
   }
   addAudit(){
-    this.afd.list("Audit").push(this.audit);
-    this.audit.Date="";
-    this.audit.Location="";
-    this.audit.Category="";
-    this.audit.Volume="";
-    this.audit.Weight="";
+    this.audit.Date = this.date;
+    this.audit.Location = this.location;
+    this.audit.Category = this.auditCategory;
+    this.audit.Volume = this.volume;
+    this.audit.Weight = this.weight;
 
+    this.afd.list("Audit").push(this.audit);
+
+    this.date="";
+    this.location="";
+    this.auditCategory="";
+    this.volume="";
+    this.weight="";
+
+  }
+  addLocation(){
+    var location = { "AuditLocationGPS": this.AuditLocationGPS,
+                    "AuditLocationName": this.AuditLocationName};
+    this.afd.list("Location").push(location);
   }
 }

@@ -1,19 +1,18 @@
 <ion-header>
-  <ion-navbar [color]="isRecording ? 'danger' : 'primary'" >
+  <ion-navbar >
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Building: QLS</ion-title>
+    <ion-title>Building - {{currentLocation}}</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content style="background-color: lightgray">
 
-  <button ion-button full (click)="getPermisions()">Get Permission </button>
-  <button ion-button full (click)="startListening()">Start recording message </button>
+  <button ion-button full (click)="getPermisions()">Get Permission (microphone) </button>
+  <button ion-button full (click)="startListening()">Enter bin with voice command </button>
 
   <ion-card>
-    <ion-card-header>This is what i understood</ion-card-header>
     <ion-card-content>
       <ion-list class="item-text-wrap">
           <button ion-item *ngFor="let item of items" color="{{item.Color}}" (click)="itemTapped($event, item)">

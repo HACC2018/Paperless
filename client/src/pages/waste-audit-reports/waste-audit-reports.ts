@@ -50,9 +50,9 @@ export class WasteAuditReportsPage {
        ];
 
  selectedReport;
- showPie: boolean = false;
- showBar: boolean = true;
- showLine: boolean = false;
+ showPie: any = 0;
+ showBar: any = 0;
+ showLine: any = 0;
 
   reportByCat;
   valueBarChart: any;
@@ -69,31 +69,31 @@ export class WasteAuditReportsPage {
 
     //Go get our data
     this.getData();
+
+    //Set up the graphs
+    this.selectedReport='All'
     this.graphSelect();
   }
   graphSelect()
   {
-    this.showPie = false;
-    this.showBar = false;
-    this.showLine = false;
+    this.showPie = 1;
+    this.showBar = 1;
+    this.showLine = 1;
 
     if(this.selectedReport=='Bar'){
-      this.showBar = true;
+      this.showBar = 0;
     }
     else if(this.selectedReport=='Pie'){
-      this.showPie = true;
+      this.showPie = 0;
     }
     else if(this.selectedReport=='Line'){
-      this.showLine = true;
+      this.showLine = 0;
     }
-    else
-    {
-      this.showPie = false;
-      this.showBar = false;
-      this.showLine = false;
-
+    else{
+      this.showPie = 0;
+      this.showBar = 0;
+      this.showLine = 0;
     }
-
   }
   getReportValues() {
     this.reportByCat = {};
@@ -232,9 +232,16 @@ export class WasteAuditReportsPage {
     this.ref.valueChanges().subscribe(result => {
         this.chartData = result;
         this.getReportValues();
+
+        this.showPie = true;
+        this.showBar = true;
+        this.showLine = true;
+
         this.createLineCharts();
         this.createPieCharts();
         this.createBarCharts();
+
+        this.graphSelect();
     })
   }
 }

@@ -7,7 +7,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content  style="background-color:#C5DCFC">
+<ion-content class = "audit-detail-background">
   <h3 text-center *ngIf="selectedItem">
     {{selectedItem.title}}
     <ion-icon [name]="selectedItem.icon"></ion-icon>
@@ -16,21 +16,15 @@
     You navigated here from <b>{{selectedItem.Name}}</b>
   </h4>
 
-  <ion-content>
+  <ion-content class="audit-detail-background">
     <ion-row align-items-end>
-      <ion-col col-2>
-        <button ion-button icon-only outline>
-          <ion-icon name="add"></ion-icon>
-        </button>
-      </ion-col>
-
-      <ion-col col-5>
+      <ion-col col-6>
         <ion-item>
           <ion-label floating>Weight</ion-label>
           <ion-input  [(ngModel)]="currentWeight"></ion-input>
         </ion-item>
       </ion-col>
-      <ion-col col-5>
+      <ion-col col-6>
         <ion-item>
           <ion-label floating>Volume (gal bag % for 50 gal bag)</ion-label>
           <ion-select [(ngModel)]="currentVolume">
@@ -59,29 +53,30 @@
 
     <ng-container *ngFor="let item of items; let i = index">
       <ng-container *ngIf="item.Category==selectedItem.Name">
-        <p style='text-align: center'>Bin - {{item.Date}}</p>
-        <ion-row align-items-end>
-          <ion-col col-6>
-            <ion-card>
-              <ion-item>
-                Volumne
-              </ion-item>
-              <ion-item>
-                {{item.Volume}}
-              </ion-item>
-            </ion-card>
-          </ion-col>
-          <ion-col col-6>
-            <ion-card>
-              <ion-item>
-                Weight
-              </ion-item>
-              <ion-item>
-                {{item.Weight}}
-              </ion-item>
-            </ion-card>
-          </ion-col>
-        </ion-row >
+        <ion-card  class="audit-parent-card" style='text-align: center'>Bin - {{item.Date}}
+          <ion-row align-items-end>
+            <ion-col col-6>
+              <ion-card class="audit-detail-card">
+                <ion-item class="audit-detail-card">
+                  Volumne
+                </ion-item>
+                <ion-item class="audit-detail-card">
+                  {{item.Volume}}
+                </ion-item>
+              </ion-card>
+            </ion-col>
+            <ion-col col-6>
+              <ion-card >
+                <ion-item class="audit-detail-card">
+                  Weight
+                </ion-item>
+                <ion-item class="audit-detail-card">
+                  {{item.Weight}}
+                </ion-item>
+              </ion-card>
+            </ion-col>
+          </ion-row >
+        </ion-card >
       </ng-container>
 
         <!--

@@ -43,24 +43,7 @@ export class AuditDetailPage {
   addBag(){
     var volumnToAdd = ((this.currentVolume === undefined) ? '0' : this.currentVolume);
     var WeightToAdd = ((this.currentWeight === undefined) ? '0' : this.currentWeight);
-
-    console.log('Tempty vol tests');
-    console.log(volumnToAdd);
-    var newBin = {
-      Category: this.selectedItem.Name,
-      Date: moment().format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS),
-      Location: '',
-      Volume: volumnToAdd,
-      Weight: WeightToAdd,
-    };
-
-    //Getting location can take some time so we need to wait
-    this.geoLoc.getCurrentPosition().then((position) => {
-        newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
-        console.log('My location: ', newBin.Location);
-        this.afd.list("Audit").push(newBin);
-      });
-
+    this.saveAuditData(this.selectedItem.Name, volumnToAdd, WeightToAdd);
     //Empty this out
     this.currentVolume = '';
     this.currentWeight = '';
@@ -89,4 +72,20 @@ export class AuditDetailPage {
 
   }
 
+  saveAuditData(categoryName, volumnToAdd, WeightToAdd){
+    var newBin = {
+      Category: categoryName,
+      Date: moment().format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS),
+      Location: '',
+      Volume: volumnToAdd,
+      Weight: WeightToAdd,
+    };
+
+    //Getting location can take some time so we need to wait
+    this.geoLoc.getCurrentPosition().then((position) => {
+        newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
+        console.log('My location: ', newBin.Location);
+        this.afd.list("Audit").push(newBin);
+      });
+  }
 }

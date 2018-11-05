@@ -46,30 +46,40 @@
     </p>
 
 
-    <p style="border-style: solid">
+    <p style="border-style: solid">Add audit by hand
       <ion-item>
         <ion-label>Date of Audit</ion-label>
-        <ion-input [(ngModel)]="audit.Date"></ion-input>
+        <ion-input [(ngModel)]="date"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Location of Audit</ion-label>
-        <ion-input [(ngModel)]="audit.Location"></ion-input>
+        <ion-input [(ngModel)]="location"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Enter Category of Audit</ion-label>
-        <ion-input [(ngModel)]="audit.Category"></ion-input>
+        <ion-input [(ngModel)]="auditCategory"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Enter Volume of Audit</ion-label>
-        <ion-input [(ngModel)]="audit.Volume"></ion-input>
+        <ion-input [(ngModel)]="volume"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Enter Weight of Audit</ion-label>
-        <ion-input [(ngModel)]="audit.Weight"></ion-input>
+        <ion-input [(ngModel)]="weight"></ion-input>
       </ion-item>
       <button ion-button (click)="addAudit()">Add data</button>
-
     </p>
 
+    <p style="border-style: solid">Add Audit Location
+      <ion-item>
+        <ion-label>Audit Locaiton Name</ion-label>
+        <ion-input [(ngModel)]="AuditLocationName"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Audit Location (GSP)</ion-label>
+        <ion-input [(ngModel)]="AuditLocationGPS"></ion-input>
+      </ion-item>
+      <button ion-button (click)="addLocation()">Add Location</button>
+    </p>
 
 </ion-content>

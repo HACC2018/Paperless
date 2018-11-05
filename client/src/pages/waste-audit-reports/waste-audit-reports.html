@@ -19,7 +19,7 @@
       <ion-row align-items-end>
         <ion-col>
           <ion-item>
-            <ion-label>Line</ion-label>
+            <ion-label sytle="text-align: right;">Line</ion-label >
             <ion-radio value="Line" (click)="graphSelect()" ></ion-radio>
           </ion-item>
         </ion-col>
@@ -33,6 +33,12 @@
           <ion-item>
             <ion-label>Pie</ion-label>
             <ion-radio value="Pie" (click)="graphSelect()"></ion-radio>
+          </ion-item>
+        </ion-col>
+        <ion-col >
+          <ion-item>
+            <ion-label>All</ion-label>
+            <ion-radio value="All" (click)="graphSelect()" checked></ion-radio>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -65,37 +71,31 @@
     </ion-list >
   </ion-card>
 
-  <ng-container >
-    <ion-card [hidden]="showBar" >
-      <ion-card-header>
-        Waste Audit - Bar Chart
-      </ion-card-header>
-      <ion-card-content>
-        <canvas #valueBarCanvas></canvas>
-      </ion-card-content>
-    </ion-card>
-  </ng-container >
-
-  <ng-container  >
-    <ion-card [hidden]="showPie">
-      <ion-card-header>
-        Waste Audit - Pie Chart
-      </ion-card-header>
-      <ion-card-content>
-        <canvas #valuePieCanvas></canvas>
-      </ion-card-content>
-    </ion-card>
-</ng-container >
-
-<ng-container  >
-  <ion-card [hidden]="showLine">
+  <ion-card [hidden]="showBar==1" >
     <ion-card-header>
-      Waste Audit - Line Chart
+      Waste Audit - Bar Chart
     </ion-card-header>
     <ion-card-content>
-      <canvas #valueLineCanvas></canvas>
+      <canvas #valueBarCanvas></canvas>
     </ion-card-content>
   </ion-card>
-</ng-container >
+
+  <ion-card [hidden]="showPie==1">
+    <ion-card-header>
+      Waste Audit - Pie Chart
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #valuePieCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+<ion-card [hidden]="showLine==1">
+  <ion-card-header>
+    Waste Audit - Line Chart
+  </ion-card-header>
+  <ion-card-content>
+    <canvas #valueLineCanvas></canvas>
+  </ion-card-content>
+  </ion-card>
 
 </ion-content>
