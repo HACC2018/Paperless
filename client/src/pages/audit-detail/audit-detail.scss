@@ -1,21 +1,22 @@
 page-audit-detail {
-  /*background:#C5DCFC; light blue
-  background-color: #024731; green
 
-
-  */
-
+  .audit-detail-header{
+    font-size: 25px;
+  }
   .audit-detail-background{
     background: lightgray;
   }
   .audit-parent-card{
-    background-color: #C5DCFC;
+    background-color: #00447C;
     color: white;
   }
   .audit-detail-card{
     text-align: center;
     font-size: large;
     color: white;
-    background-color:#024731;
+    background-color:#79bde8;
+  }
+  .audit-header-card{
+    border: think solid black;
   }
 }

@@ -77,6 +77,8 @@ export class AuditDetailPage {
       Category: categoryName,
       Date: moment().format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS),
       Location: '',
+      Lat: '',
+      Long: '',
       Volume: volumnToAdd,
       Weight: WeightToAdd,
     };
@@ -84,6 +86,8 @@ export class AuditDetailPage {
     //Getting location can take some time so we need to wait
     this.geoLoc.getCurrentPosition().then((position) => {
         newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
+        newBin.Lat = "" + position.coords.latitude;
+        newBin.Long = "" + position.coords.longitude;
         console.log('My location: ', newBin.Location);
         this.afd.list("Audit").push(newBin);
       });

@@ -45,6 +45,8 @@ weight;
 //bindable items for Location
 AuditLocationName;
 AuditLocationGPS;
+AuditLocationLat;
+AuditLocationLong;
   constructor(public navCtrl: NavController
               , public navParams: NavParams
               , private afd : AngularFireDatabase)
@@ -85,8 +87,12 @@ AuditLocationGPS;
 
   }
   addLocation(){
-    var location = { "AuditLocationGPS": this.AuditLocationGPS,
-                    "AuditLocationName": this.AuditLocationName};
+    var location = {
+                    "AuditLocationGPS": this.AuditLocationGPS,
+                    "AuditLocationName": this.AuditLocationName,
+                    "AuditLocationLat": this.AuditLocationLat,
+                    "AuditLocationLong": this.AuditLocationLong
+                  };
     this.afd.list("Location").push(location);
   }
 }

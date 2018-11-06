@@ -17,42 +17,59 @@
   <ion-card>
     <ion-list radio-group [(ngModel)]="selectedReport" >
       <ion-row align-items-end>
-        <ion-col>
+        <ion-col >
           <ion-item>
-            <ion-label sytle="text-align: right;">Line</ion-label >
-            <ion-radio value="Line" (click)="graphSelect()" ></ion-radio>
+            <ion-label>Pie</ion-label>
+            <ion-radio value="Pie" (click)="graphSelect()" checked></ion-radio>
           </ion-item>
         </ion-col>
+
         <ion-col >
           <ion-item>
             <ion-label>Bar</ion-label>
             <ion-radio value="Bar" (click)="graphSelect()"></ion-radio>
           </ion-item>
         </ion-col>
-        <ion-col >
-          <ion-item>
-            <ion-label>Pie</ion-label>
-            <ion-radio value="Pie" (click)="graphSelect()"></ion-radio>
-          </ion-item>
-        </ion-col>
+
         <ion-col >
           <ion-item>
             <ion-label>All</ion-label>
-            <ion-radio value="All" (click)="graphSelect()" checked></ion-radio>
+            <ion-radio value="All" (click)="graphSelect()" ></ion-radio>
           </ion-item>
         </ion-col>
       </ion-row>
     </ion-list>
   </ion-card>
 
+  <button ion-button full outline (click)="createOutputFile()">Push me</button>
   <ion-card>
     <ion-list >
       <ion-row >
         <ion-col>
-          <ion-item>
-            <ion-label>Datefilter</ion-label>
-            <ion-input></ion-input>
-          </ion-item>
+            <ion-item>
+              <ion-label>Value to Display</ion-label>
+              <ion-select [(ngModel)]="selectedValueFilter"  (ionChange)="onChange()">
+                  <ion-option selected >Weight</ion-option>
+                  <ion-option >Volume</ion-option>
+              </ion-select>
+            </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+  </ion-card>
+  <ion-card>
+    <ion-list >
+      <ion-row >
+        <ion-col>
+            <ion-item>
+              <ion-label>Locations</ion-label>
+              <ion-select [(ngModel)]="selectFilterLocation"  (ionChange)="onChange()" multiple="true">
+                <ng-container *ngFor="let item of filterLocation">
+                  <ion-option >{{item}}</ion-option>
+                </ng-container>
+              </ion-select>
+            </ion-item>
         </ion-col>
       </ion-row>
     </ion-list >
@@ -63,21 +80,16 @@
       <ion-row>
         <ion-col>
           <ion-item>
-            <ion-label>Location Filter</ion-label>
-            <ion-input></ion-input>
+            <ion-label>Dates</ion-label>
+            <ion-select [(ngModel)]="selectFilterDates"  (ionChange)="onChange()" multiple="true">
+              <ng-container *ngFor="let item of filterDates">
+                <ion-option >{{item}}</ion-option>
+              </ng-container>
+            </ion-select>
           </ion-item>
         </ion-col>
       </ion-row>
     </ion-list >
-  </ion-card>
-
-  <ion-card [hidden]="showBar==1" >
-    <ion-card-header>
-      Waste Audit - Bar Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #valueBarCanvas></canvas>
-    </ion-card-content>
   </ion-card>
 
   <ion-card [hidden]="showPie==1">
@@ -89,13 +101,14 @@
     </ion-card-content>
   </ion-card>
 
-<ion-card [hidden]="showLine==1">
-  <ion-card-header>
-    Waste Audit - Line Chart
-  </ion-card-header>
-  <ion-card-content>
-    <canvas #valueLineCanvas></canvas>
-  </ion-card-content>
+  <ion-card [hidden]="showBar==1" >
+    <ion-card-header>
+      Waste Audit - Bar Chart
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #valueBarCanvas></canvas>
+    </ion-card-content>
   </ion-card>
+
 
 </ion-content>

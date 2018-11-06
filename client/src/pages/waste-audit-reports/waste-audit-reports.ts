@@ -4,6 +4,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase } from 'angularfire2/database';
+import moment from 'moment';
+import { File } from '@ionic-native/file';
 
 /**
  * Generated class for the WasteAuditReportsPage page.
@@ -18,18 +20,20 @@ import { AngularFireDatabase } from 'angularfire2/database';
   templateUrl: 'waste-audit-reports.html',
 })
 export class WasteAuditReportsPage {
+  GPSTestdifference=10;
+
   data: Observable<any[]>;
+  locationData = [];
   //This is the reference from the database
   ref: any
+  //Data grouped by category
+  reportByCat;
+  //All the data
+  chartData = null;
 
-  transaction = {
-    value: 0,
-    expense: false,
-    month: 0
-  }
+  //List of canvasas to use
   @ViewChild('valueBarCanvas') valueBarCanvas;
   @ViewChild('valuePieCanvas') valuePieCanvas;
-  @ViewChild('valueLineCanvas') valueLineCanvas;
 
   backgroundColor =  [
                  'rgba(54, 162, 235, 1)',
@@ -37,31 +41,34 @@ export class WasteAuditReportsPage {
                  'rgba(255, 99, 132, 1)',
                  'rgba(75, 192, 192, 1)',
                  'rgba(153, 102, 255, 1)',
-                 'rgba(255, 159, 64, 1)'
-             ];
- borderColor =
-        [
+                 'rgba(255, 159, 64, 1)'];
+ borderColor =      [
            'rgba(54, 162, 235, 1)',
            'rgba(255, 206, 86, 1)',
            'rgba(255,99,132,1)',
            'rgba(75, 192, 192, 1)',
            'rgba(153, 102, 255, 1)',
-           'rgba(255, 159, 64, 1)'
-       ];
+           'rgba(255, 159, 64, 1)'];
 
+ //This is the report that is selected by the radio buttons
  selectedReport;
  showPie: any = 0;
  showBar: any = 0;
- showLine: any = 0;
 
-  reportByCat;
   valueBarChart: any;
   valuePieChart: any;
-  valueLineChart: any;
 
-  chartData = null;
+  selectFilterDates: any = "";
+  selectFilterLocation: any = "";
+  selectedValueFilter: any = "";
 
-  constructor(public navCtrl: NavController, private db: AngularFireDatabase) {
+  filterDates;
+  filterLocation;
+
+  constructor(public navCtrl: NavController
+    , private afd: AngularFireDatabase
+    , private file:File
+  ) {
   }
 
   ionViewDidLoad() {
@@ -78,7 +85,6 @@ export class WasteAuditReportsPage {
   {
     this.showPie = 1;
     this.showBar = 1;
-    this.showLine = 1;
 
     if(this.selectedReport=='Bar'){
       this.showBar = 0;
@@ -86,25 +92,14 @@ export class WasteAuditReportsPage {
     else if(this.selectedReport=='Pie'){
       this.showPie = 0;
     }
-    else if(this.selectedReport=='Line'){
-      this.showLine = 0;
-    }
     else{
       this.showPie = 0;
       this.showBar = 0;
-      this.showLine = 0;
     }
+
+
   }
-  getReportValues() {
-    this.reportByCat = {};
-      for (let trans of this.chartData) {
-        if (this.reportByCat[trans.Category]) {
-          this.reportByCat[trans.Category] += +trans.Volume;
-        } else {
-          this.reportByCat[trans.Category] = +trans.Volume;
-        }
-      }
-  }
+
   createBarCharts()
   {
     let graphData = this.reportByCat;
@@ -149,57 +144,11 @@ export class WasteAuditReportsPage {
       }
     });
   }
-  createLineCharts()
-  {
-  // Calculate Values for the Chart
-  let graphData = this.reportByCat;
 
-
-  // Create the chart
-  this.valueLineChart = new Chart(this.valueLineCanvas.nativeElement, {
-    type: 'line',
-    data: {
-        labels: Object.keys(graphData),
-        datasets: [{
-        data: Object.keys(graphData).map(key => graphData[key]),
-        backgroundColor: this.backgroundColor,
-        boarderColor: this.borderColor
-      }]
-    },
-    options: {
-      legend: {
-        display: false
-      },
-      tooltips: {
-        callbacks: {
-          label: function (tooltipItems, data) {
-            return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
-          }
-        }
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }],
-        yAxes: [{
-          ticks: {
-            callback: function (value, index, values) {
-              return value;
-            },
-            suggestedMin: 0
-          }
-        }]
-      },
-    }
-  });
-}
   createPieCharts()
   {
     // Calculate Values for the Chart
     let graphData = this.reportByCat;
-
     // Create the chart
     this.valuePieChart = new Chart(this.valuePieCanvas.nativeElement, {
       type: 'doughnut',
@@ -227,21 +176,146 @@ export class WasteAuditReportsPage {
 
   getData(){
     // Reference to our Firebase List
-    this.ref = this.db.list('Audit');
+    this.ref = this.afd.list('Audit');
     // Catch any update to draw the Chart
     this.ref.valueChanges().subscribe(result => {
         this.chartData = result;
         this.getReportValues();
+    })
+  }
+  convertLocationName(lat1, long1){
+    for(let currentRow of this.locationData){
 
+      var lat2, long2, dist;
+      var x: any = currentRow;
+
+      dist = this.GPSTestdifference+1;
+
+      lat2 = x.Lat;
+      long2 = x.Long;
+
+      //// TODO: Make this calculation a little more better
+      dist = Math.abs(parseFloat(lat1)-parseFloat(lat2))
+              + Math.abs(parseFloat(long1)-parseFloat(long2));
+
+      if(dist < this.GPSTestdifference){
+        return x.Name;
+      }
+    }
+  }
+  getReportValues() {
+    this.afd.list('Location').valueChanges().subscribe(
+      data=>
+      {
+        this.reportByCat = {};
+        this.filterDates = [];
+        this.filterLocation =[];
+
+        var currentRow:any;
+        for(currentRow of data)
+        {
+          this.locationData.push
+          ({
+              Name: currentRow.AuditLocationName,
+              Lat: currentRow.AuditLocationLat,
+              Long: currentRow.AuditLocationLong,
+          });
+        }
+
+
+        for (let trans of this.chartData) {
+          //Get the things to filter by
+          if("Location" in trans){
+            var placeName = this.convertLocationName(trans.Lat, trans.Long);
+            if(!this.filterLocation.includes(placeName)){
+              this.filterLocation.push(placeName);
+            }
+          }
+          var cleanDate = moment(trans.Date).format('MM/DD/YYYY');
+          if(!this.filterDates.includes(cleanDate)){
+            this.filterDates.push(cleanDate);
+          }
+        }
+
+        this.reportByCat =
+                      this.chartData
+                      .map((row) =>
+                        {
+                          row.Date =  moment(row.Date).format('MM/DD/YYYY');
+                          row.Location = this.convertLocationName(row.Lat, row.Long);
+                          return row;
+                        })
+                      .filter((row) =>
+                        {
+                          if(
+                              ((this.selectFilterLocation.indexOf(row.Location) >= 0)
+                                || this.selectFilterLocation == "")
+                            && ((
+                              this.selectFilterDates.indexOf(row.Date) >= 0)
+                                || this.selectFilterDates == "")
+                            )
+                            return true;
+                          return false;
+                        })
+                      .map((row) =>
+                        {
+                          var value = 0;
+                          if(this.selectedValueFilter=="Volume")
+                            value = parseInt(row.Volume);
+                          else if(this.selectedValueFilter=="Weight")
+                            value = parseInt(row.Weight);
+                          else{
+                            this.selectedValueFilter="Weight";
+                          }
+
+                          let rowSubset = {
+                            Category: row.Category,
+                            reportValue: value
+                          };
+
+                          return rowSubset;
+                        })
+                      .reduce( (aggroData, row) =>
+                        {
+                          if (aggroData[row.Category])
+                            {
+                              aggroData[row.Category] += row.reportValue;
+                            }
+                            else
+                            {
+                              aggroData[row.Category] = row.reportValue;
+                            }
+                          return aggroData ;
+                        }, {})
+                        ;
+                        console.log(this.reportByCat);
         this.showPie = true;
         this.showBar = true;
-        this.showLine = true;
 
-        this.createLineCharts();
         this.createPieCharts();
         this.createBarCharts();
 
         this.graphSelect();
-    })
+      }
+    );
   }
+  onChange(){
+    this.getReportValues();
+  }
+  createOutputFile()
+  {
+    console.log("trying to write file");
+/*
+    var fileName = "Waste-Audit.txt";
+    this.file.checkDir(this.file.dataDirectory, 'mydir').
+    then(_ => console.log('Directory exists')).
+    catch(err => console.log('Directory doesn\'t exist'));
+
+    return this.file.writeFile(
+    dataDirectory
+      , fileName
+      , JSON.stringify(this.reportByCat)
+      , {replace:true}).catch((err) => console.log(err));*/
+  }
+
 }

@@ -22,6 +22,8 @@ import moment from 'moment';
   templateUrl: 'waste-audit.html',
 })
 export class WasteAuditPage {
+  //This is the variable used to find the the correct place
+  GPSTestdifference = 10;
   items; //This holds our data
   isRecording = false;
   categoryList = [];
@@ -38,7 +40,6 @@ export class WasteAuditPage {
             )
   {
     this.getData();
-
   }
 
   ionViewDidLoad() {
@@ -47,17 +48,20 @@ export class WasteAuditPage {
     this.getLocation();
   }
 
+  itemTapped(event, item) {
+    this.navCtrl.push(AuditDetailPage, {
+      item: item
+    });
+  }
   getData(){
     this.afd.list('Category', ref => ref.orderByChild('Group'))
       .valueChanges().subscribe
       (
         data =>
         {
-          console.log(data);
           this.items=data;
           this.getCategories();
         }
-
       );
   }
   getCategories(){
@@ -67,11 +71,6 @@ export class WasteAuditPage {
     }
   }
 
-  itemTapped(event, item) {
-    this.navCtrl.push(AuditDetailPage, {
-      item: item
-    });
-  }
   checkPlatform(){
     if(this.plt.is('core') || this.plt.is('mobileweb')) {
       this.isApp = false;
@@ -93,6 +92,8 @@ export class WasteAuditPage {
     }
   }
   startListening(){
+    //Check permission
+    this.getPermisions();
     var userMessage;
     //If this is mobile run this
     console.log("This is andoird?:" + this.isApp)
@@ -138,7 +139,7 @@ export class WasteAuditPage {
       }
       //Doesnt get to here
       this.currentLocation = value + element;
-      
+
       //Find the value to use
       value = regex.exec(element)[0];
 
@@ -188,23 +189,34 @@ export class WasteAuditPage {
   confirm.present();
   console.log('clicked 1:' + confirm);
   }
+
   saveVoiceBin(categoryName, volumnToAdd, WeightToAdd){
     console.log("saving data")
     var newBin = {
       Category: categoryName,
       Date: moment().format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS),
       Location: '',
+      Lat: '',
+      Long: '',
       Volume: volumnToAdd,
-      Weight: WeightToAdd,
+      Weight: WeightToAdd
     };
 
     //Getting location can take some time so we need to wait
     this.geoLoc.getCurrentPosition().then((position) => {
         newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
+        newBin.Lat = "" + position.coords.latitude;
+        newBin.Long = "" + position.coords.longitude;
         console.log('My location: ', newBin.Location);
         this.afd.list("Audit").push(newBin);
       });
+}
 
+  getLocation(){
+    //Getting location can take some time so we need to wait
+    this.geoLoc.getCurrentPosition().then((position) => {
+      this.loadLocationData(position.coords.latitude, position.coords.longitude);
+    });
   }
   loadLocationData(lat1, long1){
     this.currentLocation = "Loading location";
@@ -213,17 +225,19 @@ export class WasteAuditPage {
       {
         for(let currentRow of data){
 
-          var lat2, long2, splitIndex, dist;
+          var lat2, long2, dist;
           var x: any = currentRow;
-          dist = 99;
-          splitIndex = x.AuditLocationGPS.charAt(":");
-          lat2 = x.AuditLocationGPS.substring(1, splitIndex);
-          long2 = x.AuditLocationGPS.substring(splitIndex+1, x.AuditLocationGPS.length-1);
+          dist = this.GPSTestdifference+1;
+
+          lat2 = x.AuditLocationLat;
+          long2 = x.AuditLocationLong;
+
           //// TODO: Make this calculation a little more better
           dist = Math.abs(parseFloat(lat1)-parseFloat(lat2))
                   + Math.abs(parseFloat(long1)-parseFloat(long2));
+                  console.log("Here is the distance: " + dist);
 
-          if(dist < 10){
+          if(dist < this.GPSTestdifference){
             this.currentLocation = x.AuditLocationName;
             break;
           }
@@ -233,13 +247,7 @@ export class WasteAuditPage {
         }
       }
     );
-
   }
-  getLocation(){
 
-    //Getting location can take some time so we need to wait
-    this.geoLoc.getCurrentPosition().then((position) => {
-      this.loadLocationData(position.coords.latitude, position.coords.longitude);
-    });
-  }
+
 }

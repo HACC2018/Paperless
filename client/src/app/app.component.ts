@@ -30,8 +30,8 @@ export class MyApp {
     this.pages = [
       { title: 'Home page', component: HomePage },
       { title: 'Waste Audit', component: WasteAuditPage },
-      { title: 'Datbase admin page', component: DatabaseAdminPage },
       { title: 'Waste Audit Reports', component: WasteAuditReportsPage },
+      { title: 'Datbase admin page', component: DatabaseAdminPage },
     ];
   }
 
