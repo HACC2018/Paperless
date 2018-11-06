@@ -19,6 +19,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { Geolocation } from '@ionic-native/geolocation';
 
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
+import { FileTransfer,FileTransferObject   } from '@ionic-native/file-transfer';
 
 // AF2 Settings
 export const firebaseConfig = {
@@ -62,6 +63,8 @@ export const firebaseConfig = {
     SplashScreen,
     SpeechRecognition,
     Geolocation,
+    FileTransfer,
+    FileTransferObject,
     File,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]

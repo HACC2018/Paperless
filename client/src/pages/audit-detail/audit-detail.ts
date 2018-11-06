@@ -20,7 +20,7 @@ import moment from 'moment';
 })
 export class AuditDetailPage {
   selectedItem: any;
-
+  selectedColor: string;
   currentWeight: string;
   currentVolume: string;
 
@@ -39,6 +39,9 @@ export class AuditDetailPage {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
     this.loadData();
+    console.log(this.selectedItem);
+
+    this.selectedColor = this.selectedItem.Color;
   }
   addBag(){
     var volumnToAdd = ((this.currentVolume === undefined) ? '0' : this.currentVolume);
@@ -55,7 +58,31 @@ export class AuditDetailPage {
   }
   filterOutData(loadedData)
   {
-    this.items = loadedData
+    var lat, long;
+    this.geoLoc.getCurrentPosition().then( (position) => {
+      lat = "" + position.coords.latitude;
+      long = "" + position.coords.longitude;
+      this.items =
+      loadedData.filter((row) =>
+      {
+          if(moment(row.Date).format('MM/DD/YYYY') == moment().format('MM/DD/YYYY'))
+          {
+            return true;
+          }
+          return false;
+      }).filter((row) =>
+      {
+        var dist = 100;
+        dist = Math.abs(parseFloat(lat)-parseFloat(row.Lat))
+                + Math.abs(parseFloat(long)-parseFloat(row.Long));
+        if(dist<100)
+          {
+            return true;
+          }
+        else
+          return false;
+      });
+    });
   }
   loadData(){
     this.afd.list('Audit')
@@ -66,10 +93,9 @@ export class AuditDetailPage {
           {
             console.log("Getting Audit data");
             this.filterOutData(data);
+
           }
-
         );
-
   }
 
   saveAuditData(categoryName, volumnToAdd, WeightToAdd){
@@ -88,7 +114,9 @@ export class AuditDetailPage {
         newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
         newBin.Lat = "" + position.coords.latitude;
         newBin.Long = "" + position.coords.longitude;
-        console.log('My location: ', newBin.Location);
+
+
+
         this.afd.list("Audit").push(newBin);
       });
   }

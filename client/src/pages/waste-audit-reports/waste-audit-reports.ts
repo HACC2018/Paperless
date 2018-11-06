@@ -1,11 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 
 import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase } from 'angularfire2/database';
 import moment from 'moment';
 import { File } from '@ionic-native/file';
+import { FileTransfer   } from '@ionic-native/file-transfer';
 
 /**
  * Generated class for the WasteAuditReportsPage page.
@@ -23,6 +24,7 @@ export class WasteAuditReportsPage {
   GPSTestdifference=10;
 
   data: Observable<any[]>;
+
   locationData = [];
   //This is the reference from the database
   ref: any
@@ -67,7 +69,9 @@ export class WasteAuditReportsPage {
 
   constructor(public navCtrl: NavController
     , private afd: AngularFireDatabase
-    , private file:File
+    , private transfer: FileTransfer
+    , private plt: Platform
+    , private file: File
   ) {
   }
 
@@ -288,7 +292,6 @@ export class WasteAuditReportsPage {
                           return aggroData ;
                         }, {})
                         ;
-                        console.log(this.reportByCat);
         this.showPie = true;
         this.showBar = true;
 
@@ -302,20 +305,44 @@ export class WasteAuditReportsPage {
   onChange(){
     this.getReportValues();
   }
-  createOutputFile()
-  {
-    console.log("trying to write file");
+  public createOutputFile() {
+    let path = "";
 /*
-    var fileName = "Waste-Audit.txt";
-    this.file.checkDir(this.file.dataDirectory, 'mydir').
-    then(_ => console.log('Directory exists')).
-    catch(err => console.log('Directory doesn\'t exist'));
+    if(this.plt.is('ios')){
+      path = this.file.documentsDirectory;
+    }else{
+      path = "C:\\Test\\text.txt";
+      //path = this.file.dataDirectory;
+    }
+    path = "C:\\Test\\text.txt";
+    console.log("here is the path: ") + path;
+    const transfer = this.transfer.create();
+    transfer.download("test output", path + 'testoutput.txt').then(entry =>{
+      let url = entry.toURL();
+    });*/
 
-    return this.file.writeFile(
-    dataDirectory
-      , fileName
-      , JSON.stringify(this.reportByCat)
-      , {replace:true}).catch((err) => console.log(err));*/
+    this.createAccessLogFileAndWrite("Hello World - someEventFunc was called");
+
+
   }
+
+
+    createAccessLogFileAndWrite(text: string) {
+    /*  console.log(this.file.dataDirectory);
+        //this.file.checkFile("C:\\", 'access.log')
+        //this.file.checkFile(this.file.dataDirectory, 'access.log')
+        .then(doesExist => {
+            console.log("doesExist : " + doesExist);
+            return this.writeToAccessLogFile(text);
+        }).catch(err => {
+            return this.file.createFile(this.file.dataDirectory, 'access.log', false)
+                .then(FileEntry => this.writeToAccessLogFile(text))
+                .catch(err => console.log('Couldn create file'));
+        });*/
+    }
+    writeToAccessLogFile(text: string) {
+           this.file.writeFile(this.file.dataDirectory, 'access.log', text)
+       }
+
 
 }
