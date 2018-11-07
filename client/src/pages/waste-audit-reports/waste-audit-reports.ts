@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
 
 import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -22,8 +22,6 @@ import { FileTransfer   } from '@ionic-native/file-transfer';
 })
 export class WasteAuditReportsPage {
   GPSTestdifference=10;
-
-  data: Observable<any[]>;
 
   locationData = [];
   //This is the reference from the database
@@ -72,6 +70,7 @@ export class WasteAuditReportsPage {
     , private transfer: FileTransfer
     , private plt: Platform
     , private file: File
+    , private alertCtrl: AlertController
   ) {
   }
 
@@ -306,43 +305,70 @@ export class WasteAuditReportsPage {
     this.getReportValues();
   }
   public createOutputFile() {
-    let path = "";
-/*
-    if(this.plt.is('ios')){
-      path = this.file.documentsDirectory;
-    }else{
-      path = "C:\\Test\\text.txt";
-      //path = this.file.dataDirectory;
+    var fileName = "wasteAuditExport.txt"
+    var fileText = this.createCSV();
+
+    if(this.plt.is('core') || this.plt.is('mobileweb')) {
+      this.saveTextAsFileMobile(fileText, fileName);
+    } else {
+      this.saveTextAsFileWindows(fileText, fileName);
     }
-    path = "C:\\Test\\text.txt";
-    console.log("here is the path: ") + path;
-    const transfer = this.transfer.create();
-    transfer.download("test output", path + 'testoutput.txt').then(entry =>{
-      let url = entry.toURL();
-    });*/
-
-    this.createAccessLogFileAndWrite("Hello World - someEventFunc was called");
-
-
+    
   }
+  saveTextAsFileMobile(fileText, fileName){
+      let alert = this.alertCtrl.create({
+        title: 'Not yet implemented',
+        subTitle: 'Export not implemented for mobile yet. Please try in web!',
+        buttons: ['Dismiss']
+      });
+      alert.present();
+  }
+  createCSV(){
+    var outputFile = ""
+    var hearderRow = "";
+    var createdHeader = false;
+    for(let row of this.chartData){
+      for(var key in row)
+      {
+        if(!createdHeader)
+          hearderRow += [key] + '|';
 
-
-    createAccessLogFileAndWrite(text: string) {
-    /*  console.log(this.file.dataDirectory);
-        //this.file.checkFile("C:\\", 'access.log')
-        //this.file.checkFile(this.file.dataDirectory, 'access.log')
-        .then(doesExist => {
-            console.log("doesExist : " + doesExist);
-            return this.writeToAccessLogFile(text);
-        }).catch(err => {
-            return this.file.createFile(this.file.dataDirectory, 'access.log', false)
-                .then(FileEntry => this.writeToAccessLogFile(text))
-                .catch(err => console.log('Couldn create file'));
-        });*/
+        outputFile += row[key] + '|';
+      }
+      createdHeader=true;
+      hearderRow = hearderRow.slice(0,-1);
+      outputFile = outputFile.slice(0,-1);
+      outputFile += "\\r\\n";
     }
-    writeToAccessLogFile(text: string) {
-           this.file.writeFile(this.file.dataDirectory, 'access.log', text)
-       }
+    hearderRow += "\\r\\n";
 
+    return (hearderRow.replace(/\\r\\n/g, "\r\n") + outputFile.replace(/\\r\\n/g, "\r\n"));
+  }
+  saveTextAsFileWindows (data, filename){
+      if(!data) {
+          console.error('Console.save: No data')
+          return;
+      }
+      if(!filename) filename = 'console.json'
 
+      var blob = new Blob([data], {type: 'text/csv'}),
+          e    = document.createEvent('MouseEvents'),
+          a    = document.createElement('a')
+          // FOR IE:
+
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(blob, filename);
+    }
+    else{
+        var e = document.createEvent('MouseEvents'),
+            a = document.createElement('a');
+
+        a.download = filename;
+        a.href = window.URL.createObjectURL(blob);
+        a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':');
+        //e.initEvent('click', true, false, window,
+        //    0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        a.dispatchEvent(e);
+    }
+  }
 }
