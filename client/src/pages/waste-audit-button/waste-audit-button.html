@@ -5,14 +5,42 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>waste-audit-button</ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Button Clicks Report</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content padding>
+  <ion-card>
+    <ion-list radio-group [(ngModel)]="SelectedButton" >
+      <ion-row align-items-end>
+        <ion-col >
+          <ion-item>
+            <ion-label>Real button</ion-label>
+            <ion-radio value="Real"  checked></ion-radio>
+          </ion-item>
+        </ion-col>
+        <ion-col >
+          <ion-item>
+            <ion-label>Add Virtual Button</ion-label>
+            <ion-radio value="Virtual" checked></ion-radio>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+  </ion-card>
 
+
+    <ion-card >
+      <ion-card-header>
+        Waste Audit - Button clicks
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #valueButtonCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
 </ion-content>

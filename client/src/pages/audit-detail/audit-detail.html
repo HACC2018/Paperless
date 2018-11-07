@@ -22,12 +22,12 @@
     <ion-col col-6>
       <ion-item class=".audit-header-card">
         <ion-label floating>Weight</ion-label>
-        <ion-input  [(ngModel)]="currentWeight"></ion-input>
+        <ion-input type="number"  [(ngModel)]="currentWeight"></ion-input>
       </ion-item>
     </ion-col>
     <ion-col col-6>
       <ion-item>
-        <ion-label floating>Volume (gal bag % for 50 gal bag)</ion-label>
+        <ion-label floating>Volume (% 55 gal bag)</ion-label>
         <ion-select [(ngModel)]="currentVolume">
           <ion-option value="10">10%</ion-option>
           <ion-option value="20">20%</ion-option>

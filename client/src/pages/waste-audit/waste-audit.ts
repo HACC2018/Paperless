@@ -23,7 +23,7 @@ import moment from 'moment';
 })
 export class WasteAuditPage {
   //This is the variable used to find the the correct place
-  GPSTestdifference = 10;
+  GPSTestdifference = .05;
   items; //This holds our data
   isRecording = false;
   categoryList = [];
@@ -54,11 +54,12 @@ export class WasteAuditPage {
     });
   }
   getData(){
-    this.afd.list('Category', ref => ref.orderByChild('Group'))
+    this.afd.list('Category', ref => ref.orderByChild('Order'))
       .valueChanges().subscribe
       (
         data =>
         {
+          data = data.sort(function(a:any, b:any){return a.Order-b.Order});
           this.items=data;
           this.getCategories();
         }
@@ -117,55 +118,98 @@ export class WasteAuditPage {
   }
 
   parseMessage(userMessage){
-    let type = '';
-    let category = '';
-    let value = '0';
-    let actualMessage= '';
+    var finalVolume, finalWeight, finalCategory,actualMessage;
+    let regex = /[+-]?\d+(?:\.\d+)?/g;
+    console.log("testing audio check");
+    console.log(userMessage);
 
-    for(let element of userMessage){
-      element = element.toLowerCase();
+    for(let currentMsg of userMessage){
+      var volume, weight, category ;
+      var wMarker, vMarker;
+      var foundNumbers
 
-      //Used to find numbers
-      let regex = /[+-]?\d+(?:\.\d+)?/g;
+      category = '';
+      volume = 0;
+      weight = 0;
 
-      //get the type
-      if(element.indexOf("pound") > 0 || element.indexOf(" lbs ")  > 0){
-        type = 'Weight';
-      }
-      else if(element.indexOf("%") > 0||
-              element.indexOf("%") > 0||
-              element.indexOf("bag") > 0){
-        type = 'Volume';
-      }
-      //Doesnt get to here
-      this.currentLocation = value + element;
+      wMarker = 0;
+      vMarker = 0;
 
-      //Find the value to use
-      value = regex.exec(element)[0];
+      //Easier to handle all lower
+      currentMsg = currentMsg.toLowerCase();
+      //mostly want to get rid of plural, but i think this should still work
+      currentMsg = currentMsg.replace("s", "");
 
-
-      //Find the categoryList
+      //Find the category
       for(let catName of this.categoryList){
-        if(element.indexOf(catName)>0){
+        var cleanCatName = catName.toLowerCase().replace("s", "");
+        if(currentMsg.indexOf(cleanCatName)>=0){
           category = catName;
           break;
         }
       }
 
-      if(type !== '' && value !== '' && category !== '' ){
-        //Found the values we need
-        actualMessage = element;
-        console.log("Found the item to add");
-        break;
+      //Find the weight
+      var wName="xxx";
+      if(currentMsg.indexOf("pound") >= 0) wName = 'pound';
+      else if (currentMsg.indexOf(" lbs ")  >= 0) wName = ' lbs ';
+      wMarker = currentMsg.indexOf(wName);
+
+      //Find the volume markers
+      var vName="xxx";
+      var choices
+      if(currentMsg.indexOf(" % ") >= 0) vName = '%';
+      else if (currentMsg.indexOf("percent")  >= 0) vName = 'percent';
+      else if (currentMsg.indexOf("bag")  >= 0) vName = ' bag ';
+      vMarker = currentMsg.indexOf(vName);
+
+
+      //Find the numbers to use
+      foundNumbers = regex.exec(currentMsg);
+      if(foundNumbers != null)
+      {
+        if(foundNumbers.length > 0)
+        {
+          if(vMarker>wMarker)
+            volume = foundNumbers[0];
+          else
+            weight = foundNumbers[0];
+        }
+        if(foundNumbers.length>1)
+        {
+          if(vMarker>wMarker)
+            weight = foundNumbers[1];
+          else
+            volume = foundNumbers[1];
+        }
+      }
+
+      if(category != ""){
+        //If we foun something set the values
+         if(category != "" && (weight != 0 || volume != 0)){
+           finalCategory = category;
+           finalWeight = weight;
+           finalVolume = volume;
+           actualMessage = currentMsg;
+         }
+         //If we found everything we need break;
+         if(category != "" && weight != 0 && volume != 0)
+          break;
       }
     }
-    this.currentLocation = "WE get to here";
-    this.showConfirm(actualMessage, category, type, value);
+
+    console.log('c: ' + finalCategory);
+    console.log('V: ' + finalVolume);
+    console.log('W: ' + finalWeight);
+
+    if(finalCategory != "" && (finalWeight != 0 || finalVolume != 0))
+      this.showConfirm(actualMessage, finalCategory, finalWeight, finalVolume);
   }
-  showConfirm(usedMessage, name, type, value) {
+
+  showConfirm(usedMessage, category, weight, volume) {
   let confirmed;
   let message;
-  message = '<p> Original message -(' + usedMessage + ')</p> ' + 'Adding Name: (' + name + ') ' + type + ': (' + value + ')';
+  message = '<p> Original message -(' + usedMessage + ')</p> ' + 'Adding Name: (' + category + ') Weight: [' + weight + '] Volume: [' + volume + '%]';
 
   const confirm = this.alertCtrl.create({
     title: 'Add this bin?',
@@ -180,14 +224,13 @@ export class WasteAuditPage {
       {
         text: 'Agree',
         handler: data => {
-          this.saveVoiceBin(name, type=='Weight'?value:0, type=='Volume'?value:0);
+          this.saveVoiceBin(name, volume, weight);
         }
       }
     ]
   });
 
   confirm.present();
-  console.log('clicked 1:' + confirm);
   }
 
   saveVoiceBin(categoryName, volumnToAdd, WeightToAdd){

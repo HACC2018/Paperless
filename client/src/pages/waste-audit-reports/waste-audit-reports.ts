@@ -21,7 +21,7 @@ import { FileTransfer   } from '@ionic-native/file-transfer';
   templateUrl: 'waste-audit-reports.html',
 })
 export class WasteAuditReportsPage {
-  GPSTestdifference=10;
+  GPSTestdifference=.05;
 
   locationData = [];
   //This is the reference from the database
@@ -313,7 +313,7 @@ export class WasteAuditReportsPage {
     } else {
       this.saveTextAsFileWindows(fileText, fileName);
     }
-    
+
   }
   saveTextAsFileMobile(fileText, fileName){
       let alert = this.alertCtrl.create({

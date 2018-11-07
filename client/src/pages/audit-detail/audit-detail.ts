@@ -23,6 +23,9 @@ export class AuditDetailPage {
   selectedColor: string;
   currentWeight: string;
   currentVolume: string;
+  distcheck=.05;
+  simulatedLat = "0";
+  simulatedLong = "0";
 
   public items: Array<{ Category: string, Date: string
                       , Location: string, Volume: string
@@ -72,10 +75,10 @@ export class AuditDetailPage {
           return false;
       }).filter((row) =>
       {
-        var dist = 100;
+        var dist = this.distcheck+1;
         dist = Math.abs(parseFloat(lat)-parseFloat(row.Lat))
-                + Math.abs(parseFloat(long)-parseFloat(row.Long));
-        if(dist<100)
+        + Math.abs(parseFloat(long)-parseFloat(row.Long));
+        if(dist<this.distcheck)
           {
             return true;
           }
@@ -109,15 +112,22 @@ export class AuditDetailPage {
       Weight: WeightToAdd,
     };
 
-    //Getting location can take some time so we need to wait
-    this.geoLoc.getCurrentPosition().then((position) => {
-        newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
-        newBin.Lat = "" + position.coords.latitude;
-        newBin.Long = "" + position.coords.longitude;
-
-
-
-        this.afd.list("Audit").push(newBin);
-      });
+    if(this.simulatedLat != '0' && this.simulatedLong != '0')
+    {
+      newBin.Location = this.simulatedLat + ':' + this.simulatedLong;
+      newBin.Lat= "" + this.simulatedLat;
+      newBin.Long= "" + this.simulatedLong;
+      this.afd.list("Audit").push(newBin);
+    }
+    else
+    {
+      //Getting location can take some time so we need to wait
+      this.geoLoc.getCurrentPosition().then((position) => {
+          newBin.Location = position.coords.latitude + ':' + position.coords.longitude;
+          newBin.Lat = "" + position.coords.latitude;
+          newBin.Long = "" + position.coords.longitude;
+          this.afd.list("Audit").push(newBin);
+        });
+    }
   }
 }

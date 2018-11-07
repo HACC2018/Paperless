@@ -47,6 +47,9 @@ AuditLocationName;
 AuditLocationGPS;
 AuditLocationLat;
 AuditLocationLong;
+
+//binding items for button pushes
+buttonPushStamp;
   constructor(public navCtrl: NavController
               , public navParams: NavParams
               , private afd : AngularFireDatabase)

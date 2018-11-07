@@ -8,10 +8,10 @@ import { File } from '@ionic-native/file';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { WasteAuditPage } from '../pages/waste-audit/waste-audit';
-import { AuditReportPage } from '../pages/audit-report/audit-report';
 import { AuditDetailPage } from '../pages/audit-detail/audit-detail';
 import { DatabaseAdminPage } from '../pages/database-admin/database-admin';
 import { WasteAuditReportsPage } from '../pages/waste-audit-reports/waste-audit-reports';
+import { WasteAuditButtonPage } from '../pages/waste-audit-button/waste-audit-button';
 
 //Import AF2 Module for firebase
 import { AngularFireModule } from 'angularfire2';
@@ -37,9 +37,9 @@ export const firebaseConfig = {
     MyApp,
     HomePage,
     WasteAuditPage,
-    AuditReportPage,
     AuditDetailPage,
     DatabaseAdminPage,
+    WasteAuditButtonPage,
     WasteAuditReportsPage
   ],
   imports: [
@@ -53,9 +53,9 @@ export const firebaseConfig = {
     MyApp,
     HomePage,
     WasteAuditPage,
-    AuditReportPage,
     AuditDetailPage,
     DatabaseAdminPage,
+    WasteAuditButtonPage,
     WasteAuditReportsPage
   ],
   providers: [

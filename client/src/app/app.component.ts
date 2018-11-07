@@ -9,6 +9,7 @@ import { HomePage } from '../pages/home/home';
 import { WasteAuditPage } from '../pages/waste-audit/waste-audit';
 import { DatabaseAdminPage } from '../pages/database-admin/database-admin';
 import { WasteAuditReportsPage } from '../pages/waste-audit-reports/waste-audit-reports';
+import { WasteAuditButtonPage } from '../pages/waste-audit-button/waste-audit-button';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class MyApp {
       { title: 'Home page', component: HomePage },
       { title: 'Waste Audit', component: WasteAuditPage },
       { title: 'Waste Audit Reports', component: WasteAuditReportsPage },
+      { title: 'Waste Button Report', component: WasteAuditButtonPage },
       { title: 'Datbase admin page', component: DatabaseAdminPage },
     ];
   }
