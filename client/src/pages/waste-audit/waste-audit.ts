@@ -217,7 +217,7 @@ export class WasteAuditPage {
   showConfirm(usedMessage, category, weight, volume) {
   let confirmed;
   let message;
-  message = '<p> Original message -(' + usedMessage + ')</p> ' + 'Adding Name: (' + category + ') Weight: [' + weight + '] Volume: [' + volume + '%]';
+  message = "<p> Adding Name: (" + category + ") </p> <p> Weight: " + weight + " </p> <p> Volume: " + volume + "% </p>";
 
   const confirm = this.alertCtrl.create({
     title: 'Add this bin?',
