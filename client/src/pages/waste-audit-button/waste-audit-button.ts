@@ -66,24 +66,36 @@ export class WasteAuditButtonPage {
           {
             label: "Live Button",
             fill: false,
-            backgroundColor: this.backgroundColor,
-            boarderColor: this.borderColor,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
             borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+
             data: Object.keys(this.buttonData).map(key => this.buttonData[key])
           },
           {
             label: "Simulated button",
             fill: false,
-            backgroundColor: ['red'],
-            boarderColor: ['red'],
+
+            backgroundColor: "rgba(255, 99, 132, 0.4)",
+            borderColor: "rgba(255, 99, 132, 1)",
             borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(255, 99, 132, 1)",
+            pointBackgroundColor: "#fff",
             data: Object.keys(this.buttonData).map(key => this.buttonData[key] - 1 + Math.round(Math.random()*3))
           }
         ]
       },
       options:{
         legend:{
-          display: false
+          display: true
         },
         tooltips:{
           enabled: true

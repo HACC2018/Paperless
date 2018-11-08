@@ -29,11 +29,10 @@ export class MyApp {
   ) {
     this.initializeApp();
     this.pages = [
-      { title: 'Home page', component: HomePage },
       { title: 'Waste Audit', component: WasteAuditPage },
       { title: 'Waste Audit Reports', component: WasteAuditReportsPage },
       { title: 'Waste Button Report', component: WasteAuditButtonPage },
-      { title: 'Datbase admin page', component: DatabaseAdminPage },
+      { title: 'Datbase helper (Use with Caution)', component: DatabaseAdminPage },
     ];
   }
 

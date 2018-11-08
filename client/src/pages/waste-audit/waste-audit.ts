@@ -28,7 +28,7 @@ export class WasteAuditPage {
   isRecording = false;
   categoryList = [];
   isApp = false;
-  currentLocation = "";
+  currentLocation = "Loading location";
 
   constructor(public navCtrl: NavController
               , public navParams: NavParams
@@ -111,7 +111,8 @@ export class WasteAuditPage {
     }
     else //Not mobile so run a test
     {
-       userMessage = ["1 pound of plastic cups", "one pound of plastic cup"];
+       userMessage = ["starbucks cups 10-lbs 30 %"];
+       //userMessage = ["duck duck goose"];
        this.parseMessage(userMessage);
     }
 
@@ -119,21 +120,21 @@ export class WasteAuditPage {
 
   parseMessage(userMessage){
     var finalVolume, finalWeight, finalCategory,actualMessage;
-    let regex = /[+-]?\d+(?:\.\d+)?/g;
+    let regex = /[-+]?[0-9]*\.?[0-9]+/g;
     console.log("testing audio check");
     console.log(userMessage);
 
     for(let currentMsg of userMessage){
       var volume, weight, category ;
       var wMarker, vMarker;
-      var foundNumbers
+      var foundNumbers:any;
 
       category = '';
       volume = 0;
       weight = 0;
 
-      wMarker = 0;
-      vMarker = 0;
+      wMarker = -1;
+      vMarker = -1;
 
       //Easier to handle all lower
       currentMsg = currentMsg.toLowerCase();
@@ -152,35 +153,36 @@ export class WasteAuditPage {
       //Find the weight
       var wName="xxx";
       if(currentMsg.indexOf("pound") >= 0) wName = 'pound';
-      else if (currentMsg.indexOf(" lbs ")  >= 0) wName = ' lbs ';
+      else if (currentMsg.indexOf("lbs")  >= 0) wName = 'lbs';
       wMarker = currentMsg.indexOf(wName);
 
       //Find the volume markers
       var vName="xxx";
       var choices
-      if(currentMsg.indexOf(" % ") >= 0) vName = '%';
+      if(currentMsg.indexOf("%") >= 0) vName = '%';
       else if (currentMsg.indexOf("percent")  >= 0) vName = 'percent';
-      else if (currentMsg.indexOf("bag")  >= 0) vName = ' bag ';
+      else if (currentMsg.indexOf("bag")  >= 0) vName = 'bag';
       vMarker = currentMsg.indexOf(vName);
 
 
       //Find the numbers to use
-      foundNumbers = regex.exec(currentMsg);
+      foundNumbers = currentMsg.match(regex);
+
       if(foundNumbers != null)
       {
         if(foundNumbers.length > 0)
         {
           if(vMarker>wMarker)
-            volume = foundNumbers[0];
-          else
             weight = foundNumbers[0];
+          else
+            volume = foundNumbers[0];
         }
         if(foundNumbers.length>1)
         {
           if(vMarker>wMarker)
-            weight = foundNumbers[1];
-          else
             volume = foundNumbers[1];
+          else
+            weight = foundNumbers[1];
         }
       }
 
@@ -193,17 +195,23 @@ export class WasteAuditPage {
            actualMessage = currentMsg;
          }
          //If we found everything we need break;
-         if(category != "" && weight != 0 && volume != 0)
+         if(category != "" && weight != 0 && volume != 0){
+
           break;
+
+        }
       }
     }
 
-    console.log('c: ' + finalCategory);
-    console.log('V: ' + finalVolume);
-    console.log('W: ' + finalWeight);
 
-    if(finalCategory != "" && (finalWeight != 0 || finalVolume != 0))
+    console.log("f:" + finalCategory);
+    console.log("w:" + finalWeight);
+    console.log("v:" + finalVolume);
+
+    if(finalCategory && (finalWeight  || finalVolume ))
       this.showConfirm(actualMessage, finalCategory, finalWeight, finalVolume);
+    else
+      this.showError(actualMessage);
   }
 
   showConfirm(usedMessage, category, weight, volume) {
@@ -224,7 +232,7 @@ export class WasteAuditPage {
       {
         text: 'Agree',
         handler: data => {
-          this.saveVoiceBin(name, volume, weight);
+          this.saveVoiceBin(category, volume, weight);
         }
       }
     ]
@@ -232,7 +240,15 @@ export class WasteAuditPage {
 
   confirm.present();
   }
+  showError(usedMessage){
+    const confirm = this.alertCtrl.create({
+      title: 'Could not understand',
+      message: "Sorry could not understand the message. Please try again",
+      buttons: ['OK']
+    });
 
+    confirm.present();
+  }
   saveVoiceBin(categoryName, volumnToAdd, WeightToAdd){
     console.log("saving data")
     var newBin = {
@@ -244,7 +260,7 @@ export class WasteAuditPage {
       Volume: volumnToAdd,
       Weight: WeightToAdd
     };
-
+    console.log(categoryName);
     //Getting location can take some time so we need to wait
     this.geoLoc.getCurrentPosition().then((position) => {
         newBin.Location = position.coords.latitude + ':' + position.coords.longitude;

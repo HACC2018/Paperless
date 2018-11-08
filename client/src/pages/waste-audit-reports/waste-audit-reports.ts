@@ -239,6 +239,12 @@ export class WasteAuditReportsPage {
             this.filterDates.push(cleanDate);
           }
         }
+        this.filterDates =
+          this.filterDates.sort(function(a:any, b:any)
+          {
+            return moment(a).diff(moment(b))
+          }
+        );
 
         this.reportByCat =
                       this.chartData
@@ -309,9 +315,9 @@ export class WasteAuditReportsPage {
     var fileText = this.createCSV();
 
     if(this.plt.is('core') || this.plt.is('mobileweb')) {
-      this.saveTextAsFileMobile(fileText, fileName);
-    } else {
       this.saveTextAsFileWindows(fileText, fileName);
+    } else {
+      this.saveTextAsFileMobile(fileText, fileName);
     }
 
   }
@@ -325,24 +331,27 @@ export class WasteAuditReportsPage {
   }
   createCSV(){
     var outputFile = ""
-    var hearderRow = "";
+    var headerRow = "";
     var createdHeader = false;
+
     for(let row of this.chartData){
       for(var key in row)
       {
         if(!createdHeader)
-          hearderRow += [key] + '|';
-
+        {
+          headerRow += key + '|';
+        }
         outputFile += row[key] + '|';
       }
       createdHeader=true;
-      hearderRow = hearderRow.slice(0,-1);
       outputFile = outputFile.slice(0,-1);
       outputFile += "\\r\\n";
     }
-    hearderRow += "\\r\\n";
+    console.log("key:" + headerRow );
 
-    return (hearderRow.replace(/\\r\\n/g, "\r\n") + outputFile.replace(/\\r\\n/g, "\r\n"));
+    headerRow = headerRow.slice(0,-1);
+    headerRow += "\\r\\n";
+    return (headerRow.replace(/\\r\\n/g, "\r\n") + outputFile.replace(/\\r\\n/g, "\r\n"));
   }
   saveTextAsFileWindows (data, filename){
       if(!data) {
@@ -366,8 +375,7 @@ export class WasteAuditReportsPage {
         a.download = filename;
         a.href = window.URL.createObjectURL(blob);
         a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':');
-        //e.initEvent('click', true, false, window,
-        //    0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        e.initEvent('click', true, false);
         a.dispatchEvent(e);
     }
   }
