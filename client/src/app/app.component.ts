@@ -32,7 +32,7 @@ export class MyApp {
       { title: 'Waste Audit', component: WasteAuditPage },
       { title: 'Waste Audit Reports', component: WasteAuditReportsPage },
       { title: 'Waste Button Report', component: WasteAuditButtonPage },
-      { title: 'Datbase helper (Use with Caution)', component: DatabaseAdminPage },
+      { title: 'Database helper (Use with Caution)', component: DatabaseAdminPage },
     ];
   }
 
